@@ -15,7 +15,7 @@ def cyk(rules, reverse_rules, sentence):
                 for possible_rule in possible_rules:
                     table[j][i][possible_rule[0][0]] = log(possible_rule[1]) + \
                                                        table[i][k].get(possible_rule[0][1], 0) + \
-                                                       table[i][k].get(possible_rule[0][2], 0)
+                                                       table[k+1][j].get(possible_rule[0][2], 0)
                     back[j][i][possible_rule[0][0]] = (k+1, possible_rule[0][1], possible_rule[0][2])
     tree = build_parse_tree(table, back, words, len(words)-1, 0, list(table[len(words)-1][0].keys())[0] )
     return tree, list(table[len(words)-1][0].values())[0]
