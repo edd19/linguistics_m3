@@ -16,12 +16,20 @@ def cyk(rules, reverse_rules, sentence):
                     table[j][i][possible_rule[0][0]] = log(possible_rule[1]) + \
                                                        table[i][k].get(possible_rule[0][1], 0) + \
                                                        table[i][k].get(possible_rule[0][2], 0)
-                    back[j][i][possible_rule[0][0]] = (k, possible_rule[0][1], possible_rule[0][2])
-    return list(table[len(words)-1][0].values())[0]
+                    back[j][i][possible_rule[0][0]] = (k+1, possible_rule[0][1], possible_rule[0][2])
+    tree = build_parse_tree(table, back, words, len(words)-1, 0, list(table[len(words)-1][0].keys())[0] )
+    return tree, list(table[len(words)-1][0].values())[0]
 
 
-def build_parse_tree(table, back, i, j):
-    pass
+def build_parse_tree(table, back, words, i, j, key):
+    if i == j:
+        return  "(" + key + " " + (words[i]) + ")"
+    backpointer = back[i][j].get(key)
+    k = backpointer[0]
+    left = backpointer[1]
+    right = backpointer[2]
+    return "(" + key + " " + build_parse_tree(table, back, words, i-k, j, left) + \
+           build_parse_tree(table, back, words, i, j+k, right) + ")"
 
 
 def get_terminal_rules(rules, reverse_rules, word):
