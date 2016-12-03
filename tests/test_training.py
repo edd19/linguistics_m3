@@ -18,3 +18,10 @@ class TestTraining(TestCase):
         self.assert_extract_rule("(A test)", ["A", "test"])
         self.assert_extract_rule("(AB (GH test)(GFH hgy))", ["AB", "(GH test)", "(GFH hgy))"])
 
+
+    def assert_splitcorrectly(self, line, expected):
+        self.assertEqual(training.splitcorrectly(line), expected)
+
+    def test_splitcorrectly(self):
+        self.assert_splitcorrectly('(SALUT (WESH (WESHYO non)))(YO y)',('(SALUT (WESH (WESHYO non)))', '(YO y)'))
+        self.assert_splitcorrectly('(SALUT (WESH (WESHYO non)))(YO y)', ('(SALUT (WESH (WESHYO non)))', '(YO y)'))

@@ -2,110 +2,134 @@
 import string
 import re
 
-dico1 = {}
-dico2 = {}
-dico3 = {}
+#complete rules with their respective count
+rules_with_counts = {}
 
+#proba to see a rule with R as "R -> AB"
+proba_of_rule_r = {}
 
-
-def balanced(s, i=0, cnt=0):
-    if i == len(s):
-        return cnt == 0
-    if cnt < 0:
-        return False
-    if s[i] == "(":
-        return  balanced(s, i + 1, cnt + 1)
-    elif s[i] == ")":
-        return  balanced(s, i + 1, cnt - 1)
-    return balanced(s, i + 1, cnt)
-
+#proba to see a rule with R A B exactly in "R -> AB"
+proba_of_full_rule = {}
 
 
 
 #Input : (R (A ...)(B ...)), output : R AB
 #extrait R->AB puis appelle la méthode sur A et sur B
 def parser(line):
-    substring_start=''
-    substring_op1=''
-    substring_op2=''
-    terminal = ''
-
     newline = line[1:-1]
 
-    ouvrante = 0
-    fermante = 0
     substring_start = newline.split(' ', 1)[0]
-    terminal = newline.split(' ', 1)[1]
+    rest = newline.split(' ', 1)[1]
+
     tab = []
     tab.append(substring_start)
-    left, right = splitcorrectly(terminal)
+    left, right = splitcorrectly(rest)
     tab.append(left)
+
     if len(right) > 0:
         tab.append(right)
     return tab
 
 
+
+
+def add_to_dico(rule, dico):
+    if rule not in dico:
+        dico[rule]=1
+    else:
+        increment = dico[rule]
+        increment = increment + 1
+        dico[rule]= increment
+
+# newdico = {'R A B' : 1, 'R A C' : 1}
+# add_to_dico('R A B', newdico)
+# add_to_dico('R A C', newdico)
+# print(newdico)
+
+
+#input : (X ...)(Y ...), returns (X ...) and (Y ...)
 def splitcorrectly(line):
     ouvrante = 0
     fermante = 0
     index = 0
-    for x in line:
+    if line.count('(') >1: #if not rule -> terminal
+        for x in line:
+            if x == '(':
+                ouvrante +=1
+            elif x == ')':
+                fermante +=1
 
-
-        if x == '(':
-            ouvrante +=1
-        elif x == ')':
-            fermante +=1
-
-        if ouvrante-fermante==0:
-            break
-        index +=1
-    print("Index" + str(index))
-    return (line[:index], line[index+1:])
-
-
-
-
-yo1 = '(test)'
-
-#string commence par une parenthese ouvrante
-#string = le string restant apres ouverture de la parenthese
-# def sub_string_paren(line):
-#     ouvrante = 0
-#     fermante = 0
-#     solution = ''
-#     x = 0
-#
-#     for x in range(0, len(line)):
-#         if line[x] == '(':
-#             ouvrante = ouvrante + 1
-#             solution = solution + line[x]
-#         elif line[x] == ')':
-#             fermante = fermante + 1
-#             solution = solution + line[x]
-#         x=x+1
-#     return solution
-
+            if ouvrante-fermante==0:
+                break
+            index +=1
+        return (line[:index+1], line[index+1:])
+    else:
+        #if rule -> terminal
+        return (line[1:-1].split(' ')[0], line[1:-1].split(' ')[1])
 
 #string of the form (word XXXXX), returns "word"
 def extract_symbol(sub):
     symbol=''
-    x = 0
-    while(sub[x]!=' '):
-        if(sub[x]!='('):
-            symbol = symbol + sub[x]
-        x=x+1
-    return symbol
+    sub = sub.replace('(','')
+    split = sub.split(' ', 1)
+    return split[0]
+
+
+#tells if a rule is terminal
+def terminal(line):
+    if line.count(' ') == 1:
+        return True
+    else:
+        return False
+
+#parses recursively a line
+def parser_recursive(line):
+    newline = line[1:-1]
+    split = newline.split(' ',maxsplit=1) #line split with the first space
+    substring_start = split[0]  # start symbol
+    #print("Start = " + substring_start)
+
+    # what comes after "->"
+    rest = split[1]
+    #print("Rest = " + rest)
+    tab = []
+
+    #if line isn't of the form R->terminal
+    if not terminal(line):
+        tab.append(substring_start) #first elem of tab = start
+        left, right = splitcorrectly(rest) #
+        tab.append(left) #second elem is
+
+
+        tab.append(right)
+        #print(tab)
+        rule = tab[0] + ' ' + extract_symbol(tab[1]) + ' ' + extract_symbol(tab[2])
+        add_to_dico(rule, rules_with_counts)
+        #print('left : '+tab[1])
+        #print('right : ' + tab[2])
+        parser_recursive(tab[1])#recursion on first operand
+        parser_recursive(tab[2])#recursion on second operand
+
+    elif terminal(line):#ici ca marche
+        #no right part, left part is a terminal
+        rule = substring_start + ' ' + rest
+
+        add_to_dico(rule, rules_with_counts)
+        #end of recursion
+
+
+#newdico = {}
+#parser_recursive('(SBARQ (WHADVP where)(SBARQ (SQ (VBD was)(SQ (NP <unknown>)(VP born)))(<.> ?)))')
+#print(rules_with_counts)
+
+
 
 #takes the text as input and returns a standardized text
 def standardize(input):
     with open(input, 'r') as f:
         for line in f:
-            print(line)
-            #newline = process_line(line)
+            parser_recursive(line)
+        #print(rules_with_counts)
     f.closed
 
-
-yo = '(coucou ())()()()()()()()()()()()'
-#print(extract_symbol(yo))
-#standardize('/Users/Ivan/PycharmProjects/linguistics_m3/resources/test.txt')
+#standardize('/Users/Ivan/PycharmProjects/linguistics_m3/resources/train.txt')
