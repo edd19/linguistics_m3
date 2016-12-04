@@ -10,6 +10,7 @@ proba_of_rule_r = {}
 # proba to see a rule with R A B exactly in "R -> AB"
 proba_of_full_rule = {}
 
+reverse_rules = {}
 
 # Input : (R (A ...)(B ...)), output : R AB
 # extrait R->AB puis appelle la méthode sur A et sur B
@@ -37,8 +38,12 @@ def add_to_dico(rule):
     actual = proba_of_rule_r.get(parent, 0)
     proba_of_rule_r[parent] = actual + 1
 
-
-
+    childs = rule[1]
+    if len(rule) == 3:
+        childs = (rule[1], rule[2])
+    actual = reverse_rules.get(childs, [])
+    actual.append(parent)
+    reverse_rules[childs] = actual
 
 # input : (X ...)(Y ...), returns (X ...) and (Y ...)
 def splitcorrectly(line):
