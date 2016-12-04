@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-import string
-import re
+import sys
 
 # complete rules with their respective count
 rules_with_counts = {}
@@ -30,19 +29,15 @@ def parser(line):
     return tab
 
 
-def add_to_dico(rule, dico):
-    if rule not in dico:
-        dico[rule] = 1
-    else:
-        increment = dico[rule]
-        increment = increment + 1
-        dico[rule] = increment
+def add_to_dico(rule):
+    actual = rules_with_counts.get(rule, 0)
+    rules_with_counts[rule] = actual + 1
+
+    parent = rule[0]
+    actual = proba_of_rule_r.get(parent, 0)
+    proba_of_rule_r[parent] = actual + 1
 
 
-# newdico = {'R A B' : 1, 'R A C' : 1}
-# add_to_dico('R A B', newdico)
-# add_to_dico('R A C', newdico)
-# print(newdico)
 
 
 # input : (X ...)(Y ...), returns (X ...) and (Y ...)
@@ -101,19 +96,16 @@ def parser_recursive(line):
         tab.append(left)  # second elem is
 
         tab.append(right)
-        # print(tab)
-        rule = tab[0] + ' ' + extract_symbol(tab[1]) + ' ' + extract_symbol(tab[2])
-        add_to_dico(rule, rules_with_counts)
-        # print('left : '+tab[1])
-        # print('right : ' + tab[2])
+        rule = (tab[0], extract_symbol(tab[1]), extract_symbol(tab[2]))
+        add_to_dico(rule)
         parser_recursive(tab[1])  # recursion on first operand
         parser_recursive(tab[2])  # recursion on second operand
 
     elif terminal(line):  # ici ca marche
         # no right part, left part is a terminal
-        rule = substring_start + ' ' + rest
+        rule = (substring_start , rest)
 
-        add_to_dico(rule, rules_with_counts)
+        add_to_dico(rule)
         # end of recursion
 
 
@@ -122,13 +114,11 @@ def parser_recursive(line):
 # print(rules_with_counts)
 
 
-
 # takes the text as input and returns a standardized text
 def standardize(input):
     with open(input, 'r') as f:
         for line in f:
             parser_recursive(line)
             # print(rules_with_counts)
-    f.closed
 
     # standardize('/Users/Ivan/PycharmProjects/linguistics_m3/resources/train.txt')
