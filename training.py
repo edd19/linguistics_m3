@@ -109,9 +109,10 @@ def parser_recursive(line):
         # end of recursion
 
 
-# newdico = {}
-# parser_recursive('(SBARQ (WHADVP where)(SBARQ (SQ (VBD was)(SQ (NP <unknown>)(VP born)))(<.> ?)))')
-# print(rules_with_counts)
+def compute_probability():
+    for rule in rules_with_counts.keys():
+        parent = rule[0]
+        proba_of_full_rule[rule] = rules_with_counts[rule] / proba_of_rule_r[parent]
 
 
 # takes the text as input and returns a standardized text
@@ -119,6 +120,5 @@ def standardize(input):
     with open(input, 'r') as f:
         for line in f:
             parser_recursive(line)
-            # print(rules_with_counts)
-
+    compute_probability()
     # standardize('/Users/Ivan/PycharmProjects/linguistics_m3/resources/train.txt')
