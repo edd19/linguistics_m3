@@ -167,21 +167,12 @@ def count_non_terminals(dico):
     for symbol in dico:
         split = symbol.split(' ')
         if len(split) == 3:
-            if symbol not in list:
-                list.append(symbol)
+            start_symbol = split[0]
+            if start_symbol not in list:
+                list.append(start_symbol)
     return len(list)
 
 
-# #in : dico, out : count of R->terminal rules
-# def count_terminals(rules_with_counts):
-#     list = []
-#     for symbol in rules_with_counts:
-#         split = symbol.split(' ')
-#         if len(split)==2:
-#             terminal = split[1]
-#             if terminal not in list:
-#                 list.append(terminal)
-#     return len(list)
 
 #in : dico, out : count of R->terminal rules
 def count_terminals(dico):
@@ -189,12 +180,10 @@ def count_terminals(dico):
     for symbol in dico:
         split = symbol.split(' ')
         if len(split)==2:
-            if symbol not in list:
+            terminal = split[1]
+            if terminal not in list:
                 list.append(terminal)
     return len(list)
-
-#print(count_non_terminals(newdico))
-
 
 #takes the text as input and returns a standardized text
 def standardize(input):
@@ -204,9 +193,9 @@ def standardize(input):
         #print(rules_with_counts)
     f.closed
 
-standardize('/Users/Ivan/PycharmProjects/linguistics_m3/resources/train.txt')
+standardize('/Users/Ivan/PycharmProjects/linguistics_m3/resources/test.txt')
 #parser_recursive('(SBARQ (WHNP what)(SBARQ (SQ (VBZ <s)(NP (NP (DT the)(NP (JJS <unknown>)(<NN> planet)))(PP (IN from)(NP (DT the)(<NN> sun)))))(<.> ?)))')
-# print(rules_with_counts)
+print(rules_with_counts)
 #
 # sum_counts = sum_of_counts(rules_with_counts)
 # print(sum_counts)
@@ -215,4 +204,11 @@ standardize('/Users/Ivan/PycharmProjects/linguistics_m3/resources/train.txt')
 # print(proba_of_rule)
 # test_sum = verif_sum_equal_one(proba_of_rule)
 # print(test_sum)
-# print(str(len(rules_with_counts) == len(proba_of_rule)))
+# terminal_counts = count_terminals(rules_with_counts)
+# print(terminal_counts)
+# nontermcounts = count_non_terminals(rules_with_counts)
+# print(nontermcounts)
+# #print(str(len(rules_with_counts) == len(proba_of_rule)))
+#
+# number_of_rules = len(rules_with_counts)
+# print(number_of_rules)
