@@ -30,4 +30,10 @@ class TestTraining(TestCase):
         self.assertEqual(training.sum_of_counts(dico), expected)
 
     def test_sum_of_counts(self):
-        self.assert_test_sum_of_counts(training.newdico2, {'A' : 3, 'R' : 2})
+        self.assert_test_sum_of_counts(training.newdico, {'A' : 3, 'R' : 2})
+
+    # def assert_test_count_terminals(self, dico, expected):
+    #     self.assertEqual(training.count_terminals(dico), expected)
+    #
+    # def test_count_terminals(self):
+    #     self.assert_test_count_terminals(training.newdico2, 2)
