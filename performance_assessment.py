@@ -1,11 +1,19 @@
-from training import extract_symbol
-
 
 def assess_perfomance(gold_standard, actual_sentence):
     decomposition_gold = decompose_tree(gold_standard)
     decomposition_acutal = decompose_tree(actual_sentence)
-    print(decomposition_gold[2])
-    print(decomposition_acutal[2])
+    g = len(decomposition_gold[2])
+    p = len(decomposition_acutal[2])
+    count_correct = return_count_correct(decomposition_gold[2], decomposition_acutal[2])
+    return count_correct, p, g
+
+
+def return_count_correct(gold_standard_table, actual_table):
+    count = 0
+    for element in gold_standard_table:
+        if element in actual_table:
+            count += 1
+    return count
 
 
 def decompose_tree(sentence_tree, start_index=1):
